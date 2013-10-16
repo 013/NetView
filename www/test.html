@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>test</title>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" charset="utf-8"></script>
+<script src="jquery.sparkline.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+var update;
+var myvalues=[];
+for (i=0; i <30; i++) myvalues[i]=0;
+
+$(document).ready( function() {
+	
+	update = function (myvalues) {
+		myvalues.splice(0, 1)
+		myvalues.push(Math.floor(Math.random()*11))
+		$('.dynamicsparkline').sparkline(myvalues, {height: 100, width: 200});
+	}
+	
+	setInterval("update(myvalues)", 1000);
+
+
+});	
+	</script>
+</head>
+<body>
+
+<p>
+<span class="dynamicsparkline">Loading..</span>
+</p>
+
+</body>
+</html>
