@@ -5,20 +5,42 @@ import json
 class stats:
 	def __init__(self):
 		self.JSONfile = './www/stats.json'
+		self.history = 2
 		
-	def createDB(self):
-		"""
-		"""
+		self.devices = ['eth0']
+		self.stats = ['rx_bytes', 'tx_bytes', 'rx_packets', 'tx_packets']
 		
-def getstat(inf='rx_packets', dev='eth0'):
-	"""
-	Compare information 1 second apart
-	to see how much was transferred within that 1 second (bytes/packets/etc)
-	"""
-	st = int(open('/sys/class/net/{0}/statistics/{1}'.format(dev, inf)).read())
-	sleep(1)
-	return int(open('/sys/class/net/{0}/statistics/{1}'.format(dev, inf)).read()) - st
+		# Create data list
+		self.data = list()
+		for device in self.devices:
+			dev=dict()
+			for stat in self.stats:
+				dev[stat]=(0,)*self.history
+			self.data.append({device:dev})
+	
+	def getstat(self, inf='rx_packets', dev='eth0'):
+		"""
+		Compare information 1 second apart
+		to see how much was transferred within that 1 second (bytes/packets/etc)
+		"""
+		st = int(open('/sys/class/net/{0}/statistics/{1}'.format(dev, inf)).read())
+		sleep(1)
+		return int(open('/sys/class/net/{0}/statistics/{1}'.format(dev, inf)).read()) - st
 
+	def genJSON(self):
+		for device in self.devices:
+			for stat in self.stats:
+				self.data[0][device][stat] = self.data[0][device][stat][1:]+(self.getstat(stat, device), )
+		with open(self.JSONfile, 'w') as jsonfile:
+			jsonfile.write( json.dumps(self.data) )
+
+
+if __name__ == "__main__":
+	x = stats()
+	x.genJSON()
+
+
+###############################
 def sizeof_fmt(num, bit=False):
 	""" (deprecated)
 	Convert to human readable format
@@ -28,40 +50,5 @@ def sizeof_fmt(num, bit=False):
 		if num < 1024.00:
 			return "%3.2f %s" % (num*8 if bit else num, x)
 		num /= 1024.00
-
-R_LENGTH = 2
-# Create empty tuples with the length of R_LENGTH
-data = [ { # Let this structure be created by `devices`	and `stats`
-			'rx_bytes':		((0,)*R_LENGTH),
-			'tx_bytes':		((0,)*R_LENGTH),
-			'rx_packets':	((0,)*R_LENGTH),
-			'tx_packets':	((0,)*R_LENGTH)
-		 },
-		 {
-			'':''		 
-		 }
-		]
-
-#data[0]['rx_bytes'] = data[0]['rx_bytes'][1:]+(13,)
-print json.dumps(data)
-
-
-
-devices = ['eth0']
-stats = ['rx_bytes', 'tx_bytes', 'rx_packets', 'tx_packets']
-#bit = False
-exit()
-for device in devices:
-	for stat in stats:
-		data[0][stat] = data[0][stat][1:]+(getstat(stat, device), )
-
-
-# Show Kb not KB
-#
-#while True:
-#	print "rx:\t{0}\ttx:\t{1}".format(sizeof_fmt(getstat('rx_bytes', 'eth0'), byte), sizeof_fmt(getstat('tx_bytes', 'eth0'), byte))
-#
-#	#print "{0} kbit/s {1} p/s".format(rx_bytes()/128, rx_packets())
-#
 
 
