@@ -6,10 +6,17 @@ import threading
 class stats:
 	def __init__(self):
 		self.JSONfile = './www/stats.json'
-		self.history = 20
-		
-		self.devices = ['eth0', 'vmbr0']
-		self.stats = ['rx_bytes', 'tx_bytes', 'rx_packets', 'tx_packets']
+		self.history = 60
+		# Find device names with `ifconfig` or `ip link show`
+		self.devices = ['eth0']#, 'vmbr0']
+		self.stats = ['rx_bytes', 'tx_bytes']#, 'rx_packets', 'tx_packets']
+		"""
+		collisions           rx_dropped           rx_missed_errors     tx_carrier_errors    tx_heartbeat_errors
+		multicast            rx_errors            rx_over_errors       tx_compressed        tx_packets
+		rx_bytes             rx_fifo_errors       rx_packets           tx_dropped           tx_window_errors
+		rx_compressed        rx_frame_errors      tx_aborted_errors    tx_errors
+		rx_crc_errors        rx_length_errors     tx_bytes             tx_fifo_errors
+		"""
 		
 		# Create data list
 		self.data = list()

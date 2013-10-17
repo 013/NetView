@@ -8,7 +8,7 @@
 var update;
 var myvalues=[];
 var lel;
-for (i=0; i <30; i++) myvalues[i]=0;
+//for (i=0; i <30; i++) myvalues[i]=0;
 
 $(document).ready( function() {
 	$.getJSON("stats.json", function(data){
@@ -21,8 +21,8 @@ $(document).ready( function() {
 					//update('.dynamicsparkline', val)
 					//console.log(device_name+'_'+stat)
 					//console.log(stat + " : " + val);
-					$('.net_graphs').append('<p><span class="'+device_name+'_'+stat+'">Loading..</span></p>');
-					update('.'+device_name+'_'+stat, val);
+					$('.net_graphs').append('<p><span class="'+device_name+'_'+stat+'">Loading..</span>'+device_name+' : '+stat+'</p>');
+					//getStat();//update('.'+device_name+'_'+stat, val);
 				});
 			});
 		});
@@ -33,10 +33,25 @@ $(document).ready( function() {
 		myvalues.push(Math.floor(Math.random()*11))
 		$(classN).sparkline(myvalues, {height: 100, width: 200});
 	}
+
+	getStat = function () {
+		$.getJSON("stats.json", function(data){
+			// Loop through objects
+			$.each(data, function (index, value) {
+				// Loop through and get each device as an obj (eth0, vmbr0, etc)
+				$.each(value, function(device_name, dev_obj) {
+					//console.log(device_name); 
+					$.each(dev_obj, function(stat,val) {
+						update('.'+device_name+'_'+stat, val);
+					});
+				});
+			});
+		});
+	}
 	
 	//setInterval("update('.dynamicsparkline', myvalues)", 1000);
 
-
+setInterval("getStat()", 1000);
 });	
 </script>
 </head>
