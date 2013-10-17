@@ -7,27 +7,44 @@
 <script type="text/javascript">
 var update;
 var myvalues=[];
+var lel;
 for (i=0; i <30; i++) myvalues[i]=0;
 
 $(document).ready( function() {
-	
-	update = function (myvalues) {
+	$.getJSON("stats.json", function(data){
+		// Loop through objects
+		$.each(data, function (index, value) {
+			// Loop through and get each device as an obj (eth0, vmbr0, etc)
+			$.each(value, function(device_name, dev_obj) {
+				//console.log(device_name); 
+				$.each(dev_obj, function(stat,val) {
+					//update('.dynamicsparkline', val)
+					//console.log(device_name+'_'+stat)
+					//console.log(stat + " : " + val);
+					$('.net_graphs').append('<p><span class="'+device_name+'_'+stat+'">Loading..</span></p>');
+					update('.'+device_name+'_'+stat, val);
+				});
+			});
+		});
+	});
+
+	update = function (classN, myvalues) {
 		myvalues.splice(0, 1)
 		myvalues.push(Math.floor(Math.random()*11))
-		$('.dynamicsparkline').sparkline(myvalues, {height: 100, width: 200});
+		$(classN).sparkline(myvalues, {height: 100, width: 200});
 	}
 	
-	setInterval("update(myvalues)", 1000);
+	//setInterval("update('.dynamicsparkline', myvalues)", 1000);
 
 
 });	
-	</script>
+</script>
 </head>
 <body>
 
-<p>
-<span class="dynamicsparkline">Loading..</span>
-</p>
+<div class="net_graphs">
+
+</div>
 
 </body>
 </html>

@@ -6,7 +6,7 @@ import threading
 class stats:
 	def __init__(self):
 		self.JSONfile = './www/stats.json'
-		self.history = 3
+		self.history = 20
 		
 		self.devices = ['eth0', 'vmbr0']
 		self.stats = ['rx_bytes', 'tx_bytes', 'rx_packets', 'tx_packets']
@@ -47,24 +47,6 @@ class stats:
 
 if __name__ == "__main__":
 	x = stats()
-	#print x.data
 	for i in range(x.history):
-		#try:
 		x.genJSON()
-		#except:
-		#	print x.data[1]
-		#	exit()
-
-
-###############################
-def sizeof_fmt(num, bit=False):
-	""" (deprecated)
-	Convert to human readable format
-	"""
-	y = ['bit/s','Kb/s','Mb/s','Gb/s','Tb/s'] if bit else ['bytes/s','KB/s','MB/s','GB/s','TB/s']
-	for x in y:
-		if num < 1024.00:
-			return "%3.2f %s" % (num*8 if bit else num, x)
-		num /= 1024.00
-
 
