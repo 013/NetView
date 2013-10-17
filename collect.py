@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 from time import sleep
 import json
+import threading
 
 class stats:
 	def __init__(self):
 		self.JSONfile = './www/stats.json'
-		self.history = 2
+		self.history = 3
 		
-		self.devices = ['eth0']
+		self.devices = ['eth0', 'vmbr0']
 		self.stats = ['rx_bytes', 'tx_bytes', 'rx_packets', 'tx_packets']
 		
 		# Create data list
@@ -26,18 +27,33 @@ class stats:
 		st = int(open('/sys/class/net/{0}/statistics/{1}'.format(dev, inf)).read())
 		sleep(1)
 		return int(open('/sys/class/net/{0}/statistics/{1}'.format(dev, inf)).read()) - st
-
+	
+	def setVar(self, i, device, stat):
+		self.data[i][device][stat] = self.data[i][device][stat][1:]+(self.getstat(stat, device), )
+		
 	def genJSON(self):
+		i=0
+		threads = []
 		for device in self.devices:
 			for stat in self.stats:
-				self.data[0][device][stat] = self.data[0][device][stat][1:]+(self.getstat(stat, device), )
+				t = threading.Thread(target=self.setVar, args=(i,device,stat))
+				threads.append(t)
+				t.start()
+			i+=1
+		for thread in threads:
+			thread.join()
 		with open(self.JSONfile, 'w') as jsonfile:
 			jsonfile.write( json.dumps(self.data) )
 
-
 if __name__ == "__main__":
 	x = stats()
-	x.genJSON()
+	#print x.data
+	for i in range(x.history):
+		#try:
+		x.genJSON()
+		#except:
+		#	print x.data[1]
+		#	exit()
 
 
 ###############################
