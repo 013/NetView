@@ -30,6 +30,7 @@ class stats:
 		"""
 		Compare information 1 second apart
 		to see how much was transferred within that 1 second (bytes/packets/etc)
+		(This function will probably get called thousands of times and it's open a file twice..........)
 		"""
 		st = int(open('/sys/class/net/{0}/statistics/{1}'.format(dev, inf)).read())
 		sleep(1)
@@ -49,11 +50,13 @@ class stats:
 			i+=1
 		for thread in threads:
 			thread.join()
+		# The JSON file is also getting rewritten every couple of seconds... disk thrashing??????
 		with open(self.JSONfile, 'w') as jsonfile:
 			jsonfile.write( json.dumps(self.data) )
 
 if __name__ == "__main__":
 	x = stats()
-	for i in range(x.history):
+	#for i in range(x.history):
+	while True:
 		x.genJSON()
 
