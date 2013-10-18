@@ -8,7 +8,7 @@ class stats:
 		self.JSONfile = './www/stats.json'
 		self.history = 60
 		# Find device names with `ifconfig` or `ip link show`
-		self.devices = ['eth0']#, 'vmbr0']
+		self.devices = ['eth0', 'vmbr0']
 		self.stats = ['rx_bytes', 'tx_bytes']#, 'rx_packets', 'tx_packets']
 		"""
 		collisions           rx_dropped           rx_missed_errors     tx_carrier_errors    tx_heartbeat_errors
@@ -57,6 +57,7 @@ class stats:
 if __name__ == "__main__":
 	x = stats()
 	#for i in range(x.history):
+	# 
 	while True:
 		x.genJSON()
 
